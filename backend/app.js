@@ -13,7 +13,10 @@ const userRoute = require("./routes/userRoute");
 
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin:"http://127.0.0.1:5500",
+  methods:['GET','POST']
+}));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());

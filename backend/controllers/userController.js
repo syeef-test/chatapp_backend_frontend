@@ -11,7 +11,7 @@ exports.postSignup = async (req, res, next) => {
       const password = req.body.password;
       const phone = req.body.phonenumber;
 
-      console.log(req.body.email);
+      //console.log(req.body.email);
   
       const user = await User.findAll({
         attributes: ["email"],
@@ -19,7 +19,7 @@ exports.postSignup = async (req, res, next) => {
       });
   
       if (typeof user !== "undefined" && user.length > 0) {
-        res.status(401).json({ message: "User Allready Exist with same email",success:false});
+        res.status(401).json({ message: "User already exists, Please Login",success:false});
       } else {
 
         const saltRounds = 10;
