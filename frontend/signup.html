@@ -64,8 +64,39 @@
     </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
 <script>
-   
+    async function signup(event) {
+        try {
+            event.preventDefault();
+            const name = event.target.name.value;
+            const email = event.target.email.value;
+            const password = event.target.password.value;
+            const phonenumber = event.target.phonenumber.value;
+
+            const obj = {
+                name: name,
+                email: email,
+                password: password,
+                phonenumber:phonenumber
+            };
+            
+
+            const signupData = await axios.post(
+                "http://127.0.0.1:3000/user/signup",
+                obj
+            );
+            if (signupData.status === 201) {
+                alert(signupData.data.message);
+                window.location = "login.html";
+            }
+        } catch (error) {
+            if (error) {
+                //alert(error.response.data.message);
+                console.log(error);
+            }
+        }
+    }
 </script>
 
 </html>
