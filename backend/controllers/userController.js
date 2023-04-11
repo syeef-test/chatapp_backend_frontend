@@ -33,3 +33,8 @@ exports.postSignup = async (req, res, next) => {
       console.log(error);
     }
   };
+
+
+  exports.postLogin = async(req,res,next)=>{
+
+  };
