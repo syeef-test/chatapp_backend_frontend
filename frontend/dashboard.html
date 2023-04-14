@@ -19,6 +19,10 @@
 </head>
 
 <body>
+    <div align="right">
+        <button class="btn btn-danger" onclick="logout(event)">Logout</button>
+    </div>
+
     <div class="container" align="center">
         <div class="row">
             <h2>Chat App</h2>
@@ -48,17 +52,43 @@
         <section>
             <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
                 <div class="container-fluid">
-                    <form class="d-flex">
-                        <input class="form-control me-2" type="text" placeholder="Enter text here" aria-label="text">
+                    <form class="d-flex" onsubmit="sendmessage(event)">
+                        <input class="form-control me-2" type="text" id="message" name="message"
+                            placeholder="Enter text here" aria-label="text">
                         <button class="btn btn-outline-success" type="submit">Send</button>
                     </form>
                 </div>
-    </div>
-    </nav>
-    </section>
+            </nav>
+        </section>
 
     </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    async function sendmessage(event) {
+        try {
+            event.preventDefault()
+            const content = event.target.message.value;
+
+            const token = localStorage.getItem('token');
+
+            const sendData = await axios.post('http://127.0.0.1:3000/chat/addchat', { content: content }, {
+                headers: {
+                    'authorization': token
+                }
+            });
+            if (sendData) {
+                alert(sendData.data.message);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
+    function logout(event) {
+        localStorage.removeItem('token');
+        window.location = "login.html";
+    }
+</script>
 
 </html>

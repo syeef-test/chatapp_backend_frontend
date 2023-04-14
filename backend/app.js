@@ -7,9 +7,11 @@ const sequelize = require("./util/database");
 
 
 const User = require("./models/userModel");
+const Chat = require("./models/chatModel");
 
 
 const userRoute = require("./routes/userRoute");
+const chatRoute = require("./routes/chatRoute");
 
 
 const app = express();
@@ -22,6 +24,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use("/user", userRoute);
+app.use("/chat", chatRoute);
+
+User.hasMany(Chat);
+Chat.belongsTo(User);
 
 
 sequelize
