@@ -9,10 +9,6 @@ const Chats = sequelize.define('chats',{
         allowNull:false,
         primaryKey:true
     },
-    sent_to:{
-        type:Sequelize.INTEGER,
-        allowNull:false
-    },
     message:{
         type:Sequelize.STRING,
         allowNull:false

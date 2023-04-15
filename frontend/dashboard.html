@@ -28,7 +28,8 @@
             <h2>Chat App</h2>
         </div>
         <section>
-            <table class="table table-striped">
+            
+            <table class="table table-striped" id="msgTable">
                 <tr>
                     <td>You Joined</td>
                 </tr>
@@ -60,7 +61,10 @@
                 </div>
             </nav>
         </section>
-
+        <section>
+            <div align="right" id="message"></div>
+            <div id="message_list" name="message_list" class="list-group"></div>
+        </section>
     </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -85,9 +89,57 @@
         }
 
     }
+
+   
+
+    window.addEventListener("DOMContentLoaded", async () => {
+        try{
+            const token = localStorage.getItem('token');
+
+            const getData = await axios.get('http://127.0.0.1:3000/chat/getchat', {
+                headers: {
+                    'authorization': token
+                }
+            });
+            if(getData){
+                console.log(getData.data);
+                showonscreen(getData.data);
+            }
+        }catch(error){
+            console.log(error);
+        }
+    })
+
+    function showonscreen(chatData){
+            try {
+            const parentElement = document.getElementById("message_list");
+           
+            const obj = chatData.data;
+
+            const liElement = document.createElement('ul');
+            liElement.className = "message_list";
+            liElement.id="message_list";
+            
+            obj.forEach((element)=>{
+            var childElem = `<ul class="list-group-item message" id="${element.id}">Message-${element.message}</ul>`;
+            liElement.innerHTML = liElement.innerHTML + childElem;
+            });
+            
+            parentElement.appendChild(liElement);
+
+
+            } catch (error) {
+            console.log(error);
+            }
+    }
     function logout(event) {
-        localStorage.removeItem('token');
-        window.location = "login.html";
+        try{
+            localStorage.removeItem('token');
+            window.location = "login.html";
+        }catch(error){
+            console.log(error);
+        }
+        
     }
 </script>
 
