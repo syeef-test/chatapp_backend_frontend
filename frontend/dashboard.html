@@ -28,7 +28,7 @@
             <h2>Chat App</h2>
         </div>
         <section>
-            
+
             <table class="table table-striped" id="msgTable">
                 <tr>
                     <td>You Joined</td>
@@ -90,65 +90,148 @@
 
     }
 
-   
 
-    window.addEventListener("DOMContentLoaded", async () => {
-        try{
-            const token = localStorage.getItem('token');
 
-            setInterval(async()=>{
-                const getData = await axios.get('http://127.0.0.1:3000/chat/getchat', {
-                headers: {
-                    'authorization': token
-                    }
-                });
-                if(getData){
-                    console.log(getData.data);
-                    showonscreen(getData.data);
-                }
-            },1000);
-            
-        }catch(error){
+    window.addEventListener("DOMContentLoaded", () => {
+        try {
+
+            const oldMessageObj = JSON.parse(localStorage.getItem('messageObj'));
+
+            if (oldMessageObj !== null) {
+                showonscreen(oldMessageObj);
+            }
+
+
+        } catch (error) {
             console.log(error);
         }
     })
 
-    function showonscreen(chatData){
-            try {
-            const parentElement = document.getElementById("message_list");
-           
-            const obj = chatData.data;
+    function getLastmessagId() {
+        let lastmsgId;
+        if (localStorage.getItem('messageObj')) {
+            const old_message = JSON.parse(localStorage.getItem('messageObj'));
+            //console.log(Object.values(old_message));
+            const last_message = Object.values(old_message).at(-1);
+            //console.log(last_message.id);
+            return last_message.id;
+        } else {
+            return undefined;
+        }
 
-            //if prev ele
-            const prevMessage = document.getElementsByClassName("message_list_item");
-            if(prevMessage.length>0){
-                prevMessage[0].parentNode.removeChild(prevMessage[0]);
-            }
+
+
+    }
+
+    function getChat() {
+        try {
+            // alert(window.localStorage.length);
+            const token = localStorage.getItem('token');
+
+            setInterval(async () => {
+                const lastmsgId = getLastmessagId();
+                const getData = await axios.get(`http://127.0.0.1:3000/chat/getchat/${lastmsgId}`, {
+                    headers: {
+                        'authorization': token
+                    }
+                });
+
+
+                const new_server_msgObj = getData.data.data;
+
+                console.log(getData.data.data.length);
+
+                //If localstorage data greater then 10 and new data has value delete localstorage data
+                if (localStorage.getItem('messageObj')) {
+                    const obj = JSON.parse(localStorage.getItem('messageObj'));
+                    const localStorage_msg_len = Object.values(obj).length;
+
+                    //alert("localstorage data greater then 10 and new data has value delete localstorage data");
+
+
+                    if (localStorage_msg_len >= 10 && getData.data.data.length > 0) {
+                        deleteElementfromscreen();
+                        localStorage.removeItem('messageObj');
+                    }
+
+                }
+
+
+
+                //If localstorage have lessthen 10 value and new data has value merge them both
+                if (localStorage.getItem('messageObj') && getData.data.data.length > 0) {
+                    parse_obj = JSON.parse(localStorage.getItem('messageObj'));
+                    console.log(parse_obj);
+                    const newObject = [...parse_obj, ...new_server_msgObj]
+                    console.log(newObject);
+                    alert("Localstorage has lessthen 10 and new data merged");
+                    localStorage.setItem('messageObj', JSON.stringify(newObject));
+
+                }
+
+                //If local storage have no value insert new value to localstorage
+                if (!localStorage.getItem('messageObj') && getData.data.data.length > 0) {
+                    alert("New data Inserted in database and localstorage has no data");
+
+                    localStorage.setItem('messageObj', JSON.stringify(new_server_msgObj));
+                }
+
+                if (getData.data.data.length > 0) {
+                    showonscreen(new_server_msgObj);
+                }
+
+
+            }, 10000);
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    getChat();
+
+    function deleteElementfromscreen() {
+        // //delete prev elem if greater then 10
+        alert()
+        let n1 = Array.from(document.getElementsByClassName('message_list_item'));
+        n1.forEach(n => {
+            n.remove();
+        });
+        let nodes = Array.from(document.getElementsByClassName('list-group-item message'));
+        nodes.forEach(node => {
+            node.remove();
+        });
+    }
+
+    function showonscreen(chatData) {
+        try {
+            const parentElement = document.getElementById("message_list");
+            const obj = chatData;
+            console.log(obj);
 
             const liElement = document.createElement('ul');
             liElement.className = "message_list_item";
-            liElement.id="message_list_item";
-            
-            obj.forEach((element)=>{
-            var childElem = `<ul class="list-group-item message" id="${element.id}">${element.message}</ul>`;
-            liElement.innerHTML = liElement.innerHTML + childElem;
+            liElement.id = "message_list_item";
+
+            obj.map((element) => {
+                var childElem = `<ul class="list-group-item message" id="${element.id}">${element.message}</ul>`;
+                liElement.innerHTML = liElement.innerHTML + childElem;
             });
-            
+
             parentElement.appendChild(liElement);
 
 
-            } catch (error) {
-            console.log(error);
-            }
-    }
-    function logout(event) {
-        try{
-            localStorage.removeItem('token');
-            window.location = "login.html";
-        }catch(error){
+        } catch (error) {
             console.log(error);
         }
-        
+    }
+    function logout(event) {
+        try {
+            localStorage.removeItem('token');
+            window.location = "login.html";
+        } catch (error) {
+            console.log(error);
+        }
+
     }
 </script>
 

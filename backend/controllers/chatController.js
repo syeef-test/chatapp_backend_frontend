@@ -1,7 +1,8 @@
 
 const User = require('../models/userModel');
 const Chat = require('../models/chatModel');
-
+// const { Sequelize, Op } = require("sequelize");
+const { Op } = require("sequelize");
 
 exports.addChat = async (req, res, next) => {
     // console.log(req.user.id);
@@ -22,13 +23,29 @@ exports.addChat = async (req, res, next) => {
 exports.getChat = async(req,res,next) => {
     try{
         const id = req.user.id;
+        const lastmsgId = req.params.lastmsgId;
         
-        const chatData = await Chat.findAll({where:{userId:id}});
-        console.log(chatData);
+        let last_id;
+        if(lastmsgId === 'undefined'){
+            last_id = -1;
+        }else{
+            last_id = Number(lastmsgId);
+        }
+           
+        
+        const chatData = await Chat.findAll({
+            where:{userId:id,id:{[Op.gt]: last_id}},
+        });
+
+        // const chatData = await Chat.findAll({
+        //     where:{id:{[Op.gt]: last_id},userId:id},
+        // });
+        console.log(lastmsgId);
+        console.log(chatData.length);
         if(chatData){
             res.status(200).json({ message: "Data Found", data:chatData,success: true });
         }else{
-            res.status(200).json({ message: "No Data Found",success: false });
+            res.status(200).json({ message: "No Data Found",data:'',success: false });
         }
     }catch(error){
         console.log(error);
