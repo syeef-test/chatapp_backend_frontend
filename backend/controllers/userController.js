@@ -45,15 +45,15 @@ exports.postLogin = async (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
 
-    const userDeatails = await User.findAll({
-      attributes: ['email', 'password', 'id'],
+    const userDetails = await User.findAll({
+      attributes: ['email', 'password', 'id','name'],
       where: { email: email }
     });
 
-    if (typeof userDeatails !== "undefined" && userDeatails.length > 0) {
-      const match = await bcrypt.compare(password, userDeatails[0].password);
+    if (typeof userDetails !== "undefined" && userDetails.length > 0) {
+      const match = await bcrypt.compare(password, userDetails[0].password);
       if (match) {
-        res.status(200).json({ message: "User Login Succesful", token: this.generateAccessToken(userDeatails[0].id, userDeatails[0].name), success: true });
+        res.status(200).json({ message: "User Login Succesful", token: this.generateAccessToken(userDetails[0].id, userDetails[0].name),name:userDetails[0].name, success: true });
       } else {
         res.status(401).json({ message: "User Not authorized", success: false });
       }

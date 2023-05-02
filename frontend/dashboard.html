@@ -2,12 +2,12 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
         crossorigin="anonymous"></script>
@@ -15,63 +15,144 @@
         body {
             padding-top: 50px;
         }
+
+        .sidebar {
+            position: fixed;
+            top: 101px;
+            bottom: 0;
+            left: 0;
+            z-index: 1000;
+            display: block;
+            padding: 20px;
+            overflow-x: hidden;
+            overflow-y: auto;
+            /* Scrollable contents if viewport is shorter than content. */
+            background-color: #f5f5f5;
+            border-right: 1px solid #eee;
+            width: 180px;
+        }
+
+        @media (min-width: 768px) {
+            .main {
+                padding-right: 40px;
+                padding-left: 220px;
+                /* 180 + 40 */
+            }
+        }
     </style>
 </head>
 
 <body>
-    <div align="right">
-        <button class="btn btn-danger" onclick="logout(event)">Logout</button>
-    </div>
+   
+    <section>
+        
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <button class="btn btn-danger justify-content-md-end" onclick="logout(event)">Logout</button>
+            </div>
+            </div>
+        </nav>
+    </section>
+
+
+    <section>
+        
+        <div id="sidebar">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="sidebar" id="group_list">
+                        <!-- <ul class="nav nav-sidebar">
+                            
+                           
+                        </ul> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+   
 
     <div class="container" align="center">
+        <h3>Hello</h3>
+        <h3 id="username"></h3>
         <div class="row">
             <h2>Chat App</h2>
         </div>
         <section>
+            <div id="msgTable">
 
-            <table class="table table-striped" id="msgTable">
-                <tr>
-                    <td>You Joined</td>
-                </tr>
-                <tr>
-                    <td>Vaibhav Joined</td>
-                </tr>
-                <tr>
-                    <td>Vaibhav:hello</td>
-                </tr>
-                <tr>
-                    <td>You :hi there</td>
-                </tr>
-                <tr>
-                    <td>Vaibhav:whats up?</td>
-                </tr>
-                <tr>
-                    <td>Vaibhav:All good</td>
-                </tr>
-            </table>
+            </div>
         </section>
         <section>
             <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
                 <div class="container-fluid">
                     <form class="d-flex" onsubmit="sendmessage(event)">
                         <input class="form-control me-2" type="text" id="message" name="message"
-                            placeholder="Enter text here" aria-label="text">
-                        <button class="btn btn-outline-success" type="submit">Send</button>
+                            placeholder="Enter Text Here" aria-label="text" />
+                        <button class="btn btn-outline-success" type="submit">
+                            Send
+                        </button>
                     </form>
                 </div>
             </nav>
         </section>
         <section>
-            <div align="right" id="message"></div>
-            <div id="message_list" name="message_list" class="list-group"></div>
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                <div class="container-fluid">
+                    <form class="d-flex" onsubmit="create_group(event)">
+                        <input class="form-control me-2" type="text" id="group_name" name="group_name"
+                            placeholder="Enter Group Name" aria-label="text" />
+                        <button class="btn btn-outline-success" type="submit">
+                            Create
+                        </button>
+                    </form>
+                </div>
+            </nav>
         </section>
+        <section>
+            <div>
+                <button onclick="show_participate_form()" class="btn btn-outline-success" id="add_participate_btn">ADD Participate</button>
+                <div id="participent" style="display: none;">
+                    <form onsubmit="add_participent(event)">
+                        <div class="card">
+                            <div class="card-header" >Add Participent To Group</div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <select name="group" id="group" class="form-control">
+                                        <option value="">Select Group</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="card-header" >Select User For Group</div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <select name="user_list" id="user_list" class="form-control">
+                                        <option value="">Select User</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <button type ="submit"   class="btn btn-outline-warning">Submit</button> 
+                            </div>
+                        </div>
+                        
+                    </form>
+                </div>
+                
+            </div>
+    </section>
+    <section>
+        <div align="right" id="message"></div>
+        <div id="message_list" name="message_list" class="list-group"></div>
+    </section>
     </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
     async function sendmessage(event) {
         try {
-            event.preventDefault()
+            event.preventDefault();
             const content = event.target.message.value;
 
             const token = localStorage.getItem('token');
@@ -95,12 +176,18 @@
     window.addEventListener("DOMContentLoaded", () => {
         try {
 
+            if(localStorage.getItem('username')){
+                const h_element = document.getElementById('username');
+                h_element.textContent = localStorage.getItem('username');
+            }
             const oldMessageObj = JSON.parse(localStorage.getItem('messageObj'));
 
             if (oldMessageObj !== null) {
                 showonscreen(oldMessageObj);
             }
+            get_groups_data();
 
+            
 
         } catch (error) {
             console.log(error);
@@ -139,7 +226,7 @@
 
                 const new_server_msgObj = getData.data.data;
 
-                console.log(getData.data.data.length);
+                //console.log(getData.data.data.length);
 
                 //If localstorage data greater then 10 and new data has value delete localstorage data
                 if (localStorage.getItem('messageObj')) {
@@ -163,7 +250,7 @@
                     parse_obj = JSON.parse(localStorage.getItem('messageObj'));
                     console.log(parse_obj);
                     const newObject = [...parse_obj, ...new_server_msgObj]
-                    console.log(newObject);
+                    //console.log(newObject);
                     alert("Localstorage has lessthen 10 and new data merged");
                     localStorage.setItem('messageObj', JSON.stringify(newObject));
 
@@ -181,7 +268,7 @@
                 }
 
 
-            }, 10000);
+            }, 100000000);
 
         } catch (error) {
             console.log(error);
@@ -206,7 +293,7 @@
         try {
             const parentElement = document.getElementById("message_list");
             const obj = chatData;
-            console.log(obj);
+            //console.log(obj);
 
             const liElement = document.createElement('ul');
             liElement.className = "message_list_item";
@@ -233,6 +320,148 @@
         }
 
     }
+
+    async function create_group(event) {
+        try {
+            event.preventDefault();
+            const group_name = event.target.group_name.value;
+            alert(group_name);
+            const token = localStorage.getItem('token');
+            data = await axios.post('http://127.0.0.1:3000/group/create_group', { group_name: group_name }, {
+                headers: {
+                    'authorization': token
+                }
+            });
+            response = data.data;
+            if (response) {
+                alert(response.message);
+                //console.log(response.data.id);
+                const parentElement = document.getElementById('group_list');
+                const childElem = `<li id='${response.data.id}'>${response.data.name}</li>`;
+                parentElement.innerHTML = parentElement.innerHTML + childElem;
+            } else {
+                alert("please try again later");
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+
+    async function get_groups_data() {
+        try {
+            const token = localStorage.getItem('token');
+
+            data = await axios.get('http://127.0.0.1:3000/group/get_group', {
+                headers: {
+                    'authorization': token
+                }
+            });
+            response = data.data;
+            if (response) {
+                //console.log(response.data);
+                response.data.forEach(element => {
+                    show_group_onscreen(element);
+                });
+            }
+        } catch (error) {
+            console.log(error);
+            //no data of group so hide participate btn
+            const btn = document.getElementById('add_participate_btn');
+            btn.style.display='none';
+        }
+    }
+
+    function show_group_onscreen(element) {
+        const parentElement = document.getElementById('group_list');
+        const childElem = `<li id='${element.id}' value='${element.id}' onclick="get_group_message(this.value)">${element.name}</li>`;
+        parentElement.innerHTML = parentElement.innerHTML + childElem;
+    }
+
+    function show_participate_form(){
+        alert("show form")
+        const div_element = document.getElementById('participent');
+
+        if (div_element.style.display === 'none') {
+            // 👇️ this SHOWS the form
+            div_element.style.display = 'block';
+            //call function to fetch all group created by user
+            get_group_for_dropdown();
+        } else {
+            // 👇️ this HIDES the form
+            div_element.style.display = 'none';
+        }
+
+    }
+
+    async function get_group_for_dropdown(){
+        try{
+            const token = localStorage.getItem('token');
+
+            data = await axios.get('http://127.0.0.1:3000/group/get_group_for_dropdown', {
+                headers: {
+                    'authorization': token
+                }
+            });
+            response = data.data;
+            if(response.data.length>0){
+                let select_element = document.getElementById('group');
+                var html = '';
+                for(var count = 0; count < response.data.length; count++)
+                {
+                    html += '<option value="'+response.data[count].id+'">'+response.data[count].name+'</option>';
+                    console.log(response.data);
+                }
+
+                select_element.innerHTML = html;
+
+            }
+            if(response.data2.length>0){
+                let select_element = document.getElementById('user_list');
+                var html = '';
+                for(var count = 0; count < response.data2.length; count++)
+                {
+                    html += '<option value="'+response.data2[count].id+'">'+response.data2[count].name+'</option>';
+                    console.log(response.data);
+                }
+
+                select_element.innerHTML = html;
+            }
+            
+        }catch(error){
+            console.log(error);
+        }
+    }
+
+    
+    async function add_participent(event) {
+        try {
+            event.preventDefault();
+            const group_id = event.target.group.value;
+            const user_id = event.target.user_list.value;
+           
+
+            const token = localStorage.getItem('token');
+            data = await axios.post('http://127.0.0.1:3000/group/add_participent', {group_id: group_id,user_id: user_id}, {
+                headers: {
+                    'authorization': token
+                }
+            });
+
+            const response = data.data;
+            if(response){
+                console.log(response);
+                alert(response.message);
+            }
+
+
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
+
+   
 </script>
 
 </html>
