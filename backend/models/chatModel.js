@@ -5,7 +5,7 @@ const sequelize = require('../util/database');
 const Chats = sequelize.define('chats',{
     id: {
         type: Sequelize.INTEGER,
-        autoincrement: true,
+        autoIncrement:true,
         primaryKey: true,
         allownull: false
     },

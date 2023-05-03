@@ -18,7 +18,7 @@ const authenticate = (req, res, next) => {
         throw new Error(err);
       });
   } catch (error) {
-    return res.status(401).json({ success: false });
+    return res.status(401).json({ success: false});
   }
 };
 
