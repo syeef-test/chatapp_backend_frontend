@@ -45,10 +45,10 @@
 <body>
 
     <section>
-
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container-fluid">
                 <button class="btn btn-danger justify-content-md-end" onclick="logout(event)">Logout</button>
+                
             </div>
             </div>
         </nav>
@@ -61,10 +61,6 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="sidebar" id="group_list">
-                        <!-- <ul class="nav nav-sidebar">
-                            
-                           
-                        </ul> -->
                     </div>
                 </div>
             </div>
@@ -140,12 +136,18 @@
 
                     </form>
                 </div>
-
             </div>
         </section>
         <section>
             <div align="right" id="message"></div>
             <div id="message_list" name="message_list" class="list-group"></div>
+        </section>
+
+
+
+        <section>
+            <input type="text" name="search_box" class="form-control form-control-lg" placeholder="Type Here..." id="search_box" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onkeyup="javascript:load_data(this.value)" onfocus="javascript:load_search_history()" />
+    		<span id="search_result"></span>
         </section>
     </div>
 </body>

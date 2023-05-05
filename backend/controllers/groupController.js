@@ -61,7 +61,7 @@ exports.getGroupForDropdown = async(req,res,next) =>{
 
 exports.addParticipent = async(req,res,next)=>{
     try{
-        //console.log(req.body);
+        console.log(req.body);
         const group_id = req.body.group_id;
         const user_id = req.body.user_id;
 
