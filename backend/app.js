@@ -34,13 +34,14 @@ app.use("/group", groupRoute);
 User.hasMany(Chat);
 Chat.belongsTo(User);
 
+// The Super Many-to-Many relationship
 User.belongsToMany(Group,{ through: UserGroup });
 Group.belongsToMany(User,{ through: UserGroup });
+User.hasMany(UserGroup);
+UserGroup.belongsTo(User);
+Group.hasMany(UserGroup);
+UserGroup.belongsTo(Group);
 
-// User.hasMany(user_group);
-// user_group.belongsTo(User);
-// Group.hasMany(user_group);
-// user_group.belongsTo(Group);
 
 Group.hasMany(Chat);
 Chat.belongsTo(Group);
