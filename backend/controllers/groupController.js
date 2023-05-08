@@ -231,9 +231,30 @@ exports.getData = async (req, res, next) => {
     // console.log(req.body.query);
     // console.log("called");
 
+    
+
+
     const allUsers = await User.findAll({
-      attributes: ["id", "name", "email"],
-      where: { name: { [Op.substring]: req.body.query } },
+      attributes: ["id", "name", "email","phone"],
+      where: { 
+        [Op.or]: [
+          {
+            name: {
+              [Op.substring]: req.body.query
+            }
+          },
+          {
+            email: {
+              [Op.substring]: req.body.query
+            }
+          },
+          {
+            phone: {
+              [Op.substring]: req.body.query
+            }
+          }
+        ]
+      },
     });
 
     if (allUsers.length > 0) {
