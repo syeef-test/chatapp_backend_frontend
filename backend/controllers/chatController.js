@@ -40,12 +40,16 @@ exports.getChat = async (req, res, next) => {
     const chatData = await Chat.findAll(
       {
         where: { groupId: group_id, id: { [Op.gt]: last_id } },
-        order: [["createdAt", "DESC"]],
-        limit:10
+        order: [["createdAt", "ASC"]],
+        limit:10,
+        include:[
+          {
+            model:User,
+            attributes:['name'],
+            // where:{id:req.user.id}
+          }
+        ]
       },
-      
-         
-      
     );
 
     // const chatData = await Chat.findAll({
