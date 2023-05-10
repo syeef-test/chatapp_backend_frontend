@@ -18,11 +18,15 @@ const chatRoute = require("./routes/chatRoute");
 const groupRoute = require("./routes/groupRoute");
 
 
+
+
 const app = express();
 app.use(cors({
   origin:"http://127.0.0.1:5500",
   methods:['GET','POST']
 }));
+
+
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -31,6 +35,10 @@ app.use("/user", userRoute);
 app.use("/chat", chatRoute);
 app.use("/group", groupRoute);
 
+
+app.use((req,res)=>{
+  res.sendFile(path.join(__dirname,`./public/${req.url}`));
+});
 User.hasMany(Chat);
 Chat.belongsTo(User);
 
