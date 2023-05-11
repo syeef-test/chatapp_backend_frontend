@@ -39,6 +39,7 @@ app.use("/group", groupRoute);
 app.use((req,res)=>{
   res.sendFile(path.join(__dirname,`./public/${req.url}`));
 });
+
 User.hasMany(Chat);
 Chat.belongsTo(User);
 

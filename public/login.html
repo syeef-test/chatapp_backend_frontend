@@ -75,7 +75,7 @@
                 password: password
             }
             
-            const loginData = await axios.post('http:////13.126.82.101:3000/user/login', obj);
+            const loginData = await axios.post('http://127.0.0.1:3000/user/login', obj);
              if (loginData.status === 200) {
                  alert(loginData.data.message);
                  localStorage.setItem("username",loginData.data.name);
