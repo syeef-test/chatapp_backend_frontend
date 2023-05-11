@@ -52,9 +52,7 @@
                         </div>
                         
                     </div>
-                    <div>
-                        <a href="forgotPassword.html">Forgot Password</a>
-                    </div>
+                    
                 </div>
             </div>
         </div>
@@ -75,7 +73,7 @@
                 password: password
             }
             
-            const loginData = await axios.post('http://3.108.117.101:3000/user/login', obj);
+            const loginData = await axios.post('http://127.0.0.1:3000/user/login', obj);
              if (loginData.status === 200) {
                  alert(loginData.data.message);
                  localStorage.setItem("username",loginData.data.name);
@@ -85,8 +83,8 @@
              }
         } catch (error) {
             if(error){
-                alert(error.response.data.message);
-                //console.log(error);
+                // alert(error.response.data.message);
+                console.log(error);
             }   
         }
 
