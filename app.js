@@ -23,8 +23,7 @@ const groupRoute = require("./routes/groupRoute");
 
 const app = express();
 app.use(cors({
-  origin:"*",
-  methods:['GET','POST']
+  origin:"*"
 }));
 
 
