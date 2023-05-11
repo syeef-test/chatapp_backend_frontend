@@ -182,7 +182,7 @@
 
                 //alert(query);
                 const token = localStorage.getItem('token');
-                const response = await axios.post('http://127.0.0.1:3000/group/get_data', { query: query }, {
+                const response = await axios.post('http://3.108.117.101:3000/group/get_data', { query: query }, {
                     headers: {
                         'authorization': token,
                     },
@@ -227,7 +227,7 @@
             }
             const token = localStorage.getItem('token');
 
-            const sendData = await axios.post('http://127.0.0.1:3000/chat/addchat', { content: content, group_id: group_id }, {
+            const sendData = await axios.post('http://3.108.117.101:3000/chat/addchat', { content: content, group_id: group_id }, {
                 headers: {
                     'authorization': token
                 }
@@ -298,7 +298,7 @@
                 const token = localStorage.getItem('token');
                 //alert(group_id);
                 const lastmsgId = getLastmessagId();
-                const getData = await axios.post(`http://127.0.0.1:3000/chat/getchat/${lastmsgId}`, { group_id: group_id }, {
+                const getData = await axios.post(`http://3.108.117.101:3000/chat/getchat/${lastmsgId}`, { group_id: group_id }, {
                     headers: {
                         'authorization': token
                     }
@@ -410,7 +410,7 @@
             const group_name = event.target.group_name.value;
             alert(group_name);
             const token = localStorage.getItem('token');
-            const data = await axios.post('http://127.0.0.1:3000/group/create_group', { group_name: group_name }, {
+            const data = await axios.post('http://3.108.117.101:3000/group/create_group', { group_name: group_name }, {
                 headers: {
                     'authorization': token
                 }
@@ -441,7 +441,7 @@
         try {
             const token = localStorage.getItem('token');
 
-            const data = await axios.get('http://127.0.0.1:3000/group/get_group', {
+            const data = await axios.get('http://3.108.117.101:3000/group/get_group', {
                 headers: {
                     'authorization': token
                 }
@@ -503,7 +503,7 @@
         try {
             const token = localStorage.getItem('token');
 
-            data = await axios.get('http://127.0.0.1:3000/group/get_group_for_dropdown', {
+            data = await axios.get('http://3.108.117.101:3000/group/get_group_for_dropdown', {
                 headers: {
                     'authorization': token
                 }
@@ -540,7 +540,7 @@
             const action = event.target.radio_action.value
 
             const token = localStorage.getItem('token');
-            const data = await axios.post('http://127.0.0.1:3000/group/add_participent', { group_id: group_id, user_ids: values, type: type, action: action }, {
+            const data = await axios.post('http://3.108.117.101:3000/group/add_participent', { group_id: group_id, user_ids: values, type: type, action: action }, {
                 headers: {
                     'authorization': token
                 }
@@ -563,7 +563,7 @@
         try {
             const group_id = id;
             const token = localStorage.getItem('token');
-            const response = await axios.post('http://127.0.0.1:3000/group/left_group', { group_id: group_id }, {
+            const response = await axios.post('http://3.108.117.101:3000/group/left_group', { group_id: group_id }, {
                 headers: {
                     'authorization': token
                 }
