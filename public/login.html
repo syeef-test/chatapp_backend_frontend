@@ -50,9 +50,9 @@
                         <div class="mb-3">
                             <a href="signup.html" class="btn btn-info">New User Sign In</a>
                         </div>
-                        
+
                     </div>
-                    
+
                 </div>
             </div>
         </div>
@@ -62,10 +62,9 @@
 </body>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
-    async function login(event){
+    async function login(event) {
         try {
             event.preventDefault();
-            alert();
             const email = event.target.email.value;
             const password = event.target.password.value;
 
@@ -73,20 +72,20 @@
                 email: email,
                 password: password
             }
-            
+
             const loginData = await axios.post('http://13.232.63.130:3000/user/login', obj);
-             if (loginData.status === 200) {
-                 alert(loginData.data.message);
-                 localStorage.setItem("username",loginData.data.name);
-                 //console.log(loginData.data.token);
-                 localStorage.setItem('token',loginData.data.token);
-                 window.location = "dashboard.html";
-             }
+            if (loginData.status === 200) {
+                alert(loginData.data.message);
+                localStorage.setItem("username", loginData.data.name);
+                //console.log(loginData.data.token);
+                localStorage.setItem('token', loginData.data.token);
+                window.location = "dashboard.html";
+            }
         } catch (error) {
-            if(error){
+            if (error) {
                 //console.log(error);
                 alert(error.response.data.message);
-            }   
+            }
         }
 
     }
