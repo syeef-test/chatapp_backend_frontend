@@ -69,7 +69,6 @@
     async function signup(event) {
         try {
             event.preventDefault();
-            alert();
             const name = event.target.name.value;
             const email = event.target.email.value;
             const password = event.target.password.value;
@@ -84,7 +83,7 @@
             
 
             const signupData = await axios.post(
-                "http://http://13.232.63.130:3000/user/signup",
+                "http://13.232.63.130:3000/user/signup",
                 obj
             );
             if (signupData.status === 201) {
@@ -93,7 +92,8 @@
             }
         } catch (error) {
             if (error) {
-                console.log(error);
+                //console.log(error);
+                alert(error.response.data.message);
             }
         }
     }
