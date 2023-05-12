@@ -325,13 +325,13 @@
                     console.log(parse_obj);
                     const newObject = [...parse_obj, ...new_server_msgObj]
                     //console.log(newObject);
-                    alert("Localstorage has lessthen 10 and new data merged");
+                    //alert("Localstorage has lessthen 10 and new data merged");
                     localStorage.setItem('messageObj', JSON.stringify(newObject));
                 }
 
                 //If local storage have no value insert new value to localstorage
                 if (!localStorage.getItem('messageObj') && getData.data.data.length > 0) {
-                    alert("New data Inserted in database and localstorage has no data");
+                    //alert("New data Inserted in database and localstorage has no data");
                     localStorage.setItem('messageObj', JSON.stringify(new_server_msgObj));
                 }
 

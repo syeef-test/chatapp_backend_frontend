@@ -57,7 +57,7 @@
                     </div>
                 </form>
                 <div>
-                    <a href="login.html">Existing User Login</a>
+                    <a href="index.html">Existing User Login</a>
                 </div>
             </div>
         </div>
@@ -88,7 +88,7 @@
             );
             if (signupData.status === 201) {
                 alert(signupData.data.message);
-                window.location = "login.html";
+                window.location = "index.html";
             }
         } catch (error) {
             if (error) {
