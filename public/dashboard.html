@@ -11,6 +11,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
         crossorigin="anonymous"></script>
+
+        
+        
     <style>
         body {
             padding-top: 50px;
@@ -173,7 +176,40 @@
     </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.socket.io/4.6.0/socket.io.min.js" integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+" crossorigin="anonymous"></script>
 <script>
+    //socket part
+    const socket = io("http://127.0.0.1:3000");
+    
+    socket.on('connect',()=>{
+        console.log(`You are connected with id:${socket.id}`);
+        // socket.emit('custom-event', 10,"hello",{token:10});
+    });
+
+    socket.on('recive_message',message=>{
+        alert(message);
+        console.log(message);
+    });
+
+    
+
+    function sendmessage(event) {
+        event.preventDefault();
+        const content = event.target.message.value;
+        const group_id = localStorage.getItem('group_id');
+        socket.emit('send_message',{content:content,group_id:group_id});
+    }
+
+    function getmessage(id){
+        const group_id = id;
+        socket.emit('get_message',{group_id:group_id});
+    }
+
+    function joingroup(id){
+        alert(id);
+        const group_id = id;
+        socket.emit('join_group',{group_id:id});
+    }
 
     async function load_data(query) {
         try {
@@ -182,14 +218,12 @@
 
                 //alert(query);
                 const token = localStorage.getItem('token');
-                const response = await axios.post('http://13.232.63.130:3000/group/get_data', { query: query }, {
+                const response = await axios.post('http://127.0.0.1:3000/group/get_data', { query: query }, {
                     headers: {
                         'authorization': token,
                     },
 
                 });
-
-
                 // "Content-Type": "multipart/form-data",
 
                 if (response.data) {
@@ -216,32 +250,6 @@
             console.log(error);
         }
     }
-    async function sendmessage(event) {
-        try {
-            event.preventDefault();
-            const content = event.target.message.value;
-            const group_id = localStorage.getItem('group_id');
-
-            if (group_id === undefined || group_id === null) {
-                alert("Please Select a Group or Create a Group For Message");
-            }
-            const token = localStorage.getItem('token');
-
-            const sendData = await axios.post('http://13.232.63.130:3000/chat/addchat', { content: content, group_id: group_id }, {
-                headers: {
-                    'authorization': token
-                }
-            });
-            if (sendData) {
-                alert(sendData.data.message);
-            }
-        } catch (error) {
-            console.log(error);
-        }
-
-    }
-
-
 
     window.addEventListener("DOMContentLoaded", () => {
         try {
@@ -250,149 +258,45 @@
                 const h_element = document.getElementById('username');
                 h_element.textContent = localStorage.getItem('username');
             }
-            const oldMessageObj = JSON.parse(localStorage.getItem('messageObj'));
-
-            if (oldMessageObj !== null) {
-                showonscreen(oldMessageObj);
-            }
             get_groups_data();
-
-
 
         } catch (error) {
             console.log(error);
         }
     })
+ 
+    // function showonscreen(chatData) {
+    //     try {
+    //         const parentElement = document.getElementById("message_list");
+    //         const obj = chatData;
+    //         //console.log(obj);
 
-    function getLastmessagId() {
-        let lastmsgId;
-        if (localStorage.getItem('messageObj')) {
-            const old_message = JSON.parse(localStorage.getItem('messageObj'));
-            //console.log(Object.values(old_message));
-            const last_message = Object.values(old_message).at(-1);
-            //console.log(last_message.id);
-            return last_message.id;
-        } else {
-            return undefined;
-        }
+    //         const liElement = document.createElement('ul');
+    //         liElement.className = "message_list_item";
+    //         liElement.id = "message_list_item";
 
+    //         obj.map((element) => {
 
+    //             let date = new Date(element.createdAt);
+    //             let fullyear = date.getFullYear();
+    //             let hour = date.getHours();
+    //             let minutes = date.getMinutes();
+    //             let seconds = date.getSeconds();
+    //             let createdAt = "Y" + ":" + fullyear + ":" + "H" + hour + ":" + "M" + minutes + ":" + "S" + seconds;
 
-    }
+    //             var childElem = `<ul class="list-group-item message" id="${element.id}">${element.message}&nbsp&nbsp&nbsp&nbspFrom ${element.user.name}
+    //                 &nbsp&nbsp&nbsp&nbsp${createdAt}</ul>`;
+    //             liElement.innerHTML = liElement.innerHTML + childElem;
 
-    async function getChat(id) {
-        try {
-            // alert(window.localStorage.length);
-            //alert("getChat");
+    //         });
 
-            //changing group remove message from localstorage
-            localStorage.removeItem('messageObj');
-            deleteElementfromscreen();
-
-            localStorage.setItem('group_id', id);
-            //const group_id = id;
-            //alert(group_id);
-            //alert(token);
-            setInterval(async () => {
-                const group_id = localStorage.getItem('group_id');
-                const token = localStorage.getItem('token');
-                //alert(group_id);
-                const lastmsgId = getLastmessagId();
-                const getData = await axios.post(`http://13.232.63.130:3000/chat/getchat/${lastmsgId}`, { group_id: group_id }, {
-                    headers: {
-                        'authorization': token
-                    }
-                });
-
-                //console.log(getData);
-                const new_server_msgObj = getData.data.data;
-                //console.log(getData.data.data.length);
-                console.log(new_server_msgObj);
-
-                //If localstorage data greater then 10 and new data has value delete localstorage data
-                if (localStorage.getItem('messageObj')) {
-                    const obj = JSON.parse(localStorage.getItem('messageObj'));
-                    const localStorage_msg_len = Object.values(obj).length;
-                    //alert("localstorage data greater then 10 and new data has value delete localstorage data");
-                    if (localStorage_msg_len >= 10 && getData.data.data.length > 0) {
-                        deleteElementfromscreen();
-                        localStorage.removeItem('messageObj');
-                    }
-                }
-                //If localstorage have lessthen 10 value and new data has value merge them both
-                if (localStorage.getItem('messageObj') && getData.data.data.length > 0) {
-                    parse_obj = JSON.parse(localStorage.getItem('messageObj'));
-                    console.log(parse_obj);
-                    const newObject = [...parse_obj, ...new_server_msgObj]
-                    //console.log(newObject);
-                    //alert("Localstorage has lessthen 10 and new data merged");
-                    localStorage.setItem('messageObj', JSON.stringify(newObject));
-                }
-
-                //If local storage have no value insert new value to localstorage
-                if (!localStorage.getItem('messageObj') && getData.data.data.length > 0) {
-                    //alert("New data Inserted in database and localstorage has no data");
-                    localStorage.setItem('messageObj', JSON.stringify(new_server_msgObj));
-                }
-
-                if (getData.data.data.length > 0) {
-                    showonscreen(new_server_msgObj);
-                }
+    //         parentElement.appendChild(liElement);
 
 
-            }, 1000);
-
-        } catch (error) {
-            console.log(error);
-        }
-    }
-    //getChat();
-
-    function deleteElementfromscreen() {
-        // //delete prev elem if greater then 10
-        //alert("10");
-        let n1 = Array.from(document.getElementsByClassName('message_list_item'));
-        n1.forEach(n => {
-            n.remove();
-        });
-        let nodes = Array.from(document.getElementsByClassName('list-group-item message'));
-        nodes.forEach(node => {
-            node.remove();
-        });
-    }
-
-    function showonscreen(chatData) {
-        try {
-            const parentElement = document.getElementById("message_list");
-            const obj = chatData;
-            //console.log(obj);
-
-            const liElement = document.createElement('ul');
-            liElement.className = "message_list_item";
-            liElement.id = "message_list_item";
-
-            obj.map((element) => {
-
-                let date = new Date(element.createdAt);
-                let fullyear = date.getFullYear();
-                let hour = date.getHours();
-                let minutes = date.getMinutes();
-                let seconds = date.getSeconds();
-                let createdAt = "Y" + ":" + fullyear + ":" + "H" + hour + ":" + "M" + minutes + ":" + "S" + seconds;
-
-                var childElem = `<ul class="list-group-item message" id="${element.id}">${element.message}&nbsp&nbsp&nbsp&nbspFrom ${element.user.name}
-                    &nbsp&nbsp&nbsp&nbsp${createdAt}</ul>`;
-                liElement.innerHTML = liElement.innerHTML + childElem;
-
-            });
-
-            parentElement.appendChild(liElement);
-
-
-        } catch (error) {
-            console.log(error);
-        }
-    }
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // }
     function logout(event) {
         try {
             localStorage.removeItem('token');
@@ -403,14 +307,12 @@
         }
 
     }
-
     async function create_group(event) {
         try {
             event.preventDefault();
             const group_name = event.target.group_name.value;
-            alert(group_name);
             const token = localStorage.getItem('token');
-            const data = await axios.post('http://13.232.63.130:3000/group/create_group', { group_name: group_name }, {
+            const data = await axios.post('http://127.0.0.1:3000/group/create_group', { group_name: group_name }, {
                 headers: {
                     'authorization': token
                 }
@@ -419,12 +321,6 @@
             if (response) {
                 alert(response.message);
                 show_group_onscreen(response.data);
-                // const parentElement = document.getElementById('group_list');
-                // let childElem = `<li class='btn btn-warning btn-sm' id='${response.data.id}' value='${response.data.id}' onclick="getChat(this.value)">${response.data.name}</li>`;
-                // let left_button = `<ul><button class='btn btn-danger btn-sm' id='groupbtn${response.data.id}' value='${response.data.id}' onclick='leftGroup(this.value)'>Left Group</button></ul>`;
-                // childElem += left_button;
-                // parentElement.innerHTML = parentElement.innerHTML + childElem;
-
                 const btn = document.getElementById('add_participate_btn');
                 btn.style.display = 'block';
 
@@ -435,13 +331,11 @@
             console.log(error);
         }
     }
-
-
     async function get_groups_data() {
         try {
             const token = localStorage.getItem('token');
 
-            const data = await axios.get('http://13.232.63.130:3000/group/get_group', {
+            const data = await axios.get('http://127.0.0.1:3000/group/get_group', {
                 headers: {
                     'authorization': token
                 }
@@ -458,7 +352,7 @@
                     btn.style.display = 'none';
                 }
             }
-            console.log(response);
+            //console.log(response);
         } catch (error) {
             console.log(error);
             //no data of group so hide participate btn
@@ -467,21 +361,21 @@
 
         }
     }
-
     function show_group_onscreen(element) {
         try {
             //console.log(element);
             const parentElement = document.getElementById('group_list');
-            let childElem = `<li class='btn btn-warning btn-sm' id='group${element.id}' value='${element.id}' onclick="getChat(this.value)">${element.name}</li>`;
+            let childElem = `<li class='btn btn-warning btn-sm' id='group${element.id}' value='${element.id}' onclick="getmessage(this.value)">${element.name}</li>`;
             const left_button = `<ul><button class='btn btn-danger btn-sm' id='groupbtn${element.id}' value='${element.id}' onclick='leftGroup(this.value)'>Left Group</button></ul>`;
+            const join_button = `<ul><button class='btn btn-success btn-sm' id='groupbtn${element.id}' value='${element.id}' onclick='joingroup(this.value)'>Join Group</button></ul>`;
             childElem += left_button;
+            childElem += join_button;
             parentElement.innerHTML = parentElement.innerHTML + childElem;
         } catch (error) {
             console.log(error);
         }
 
     }
-
     function show_participate_form() {
         // alert("show form")
         const div_element = document.getElementById('participent');
@@ -498,12 +392,11 @@
         }
 
     }
-
     async function get_group_for_dropdown() {
         try {
             const token = localStorage.getItem('token');
 
-            data = await axios.get('http://13.232.63.130:3000/group/get_group_for_dropdown', {
+            data = await axios.get('http://127.0.0.1:3000/group/get_group_for_dropdown', {
                 headers: {
                     'authorization': token
                 }
@@ -520,13 +413,10 @@
                 select_element.innerHTML = html;
 
             }
-
-
         } catch (error) {
             console.log(error);
         }
     }
-
 
     async function add_participent(event) {
         try {
@@ -540,7 +430,7 @@
             const action = event.target.radio_action.value
 
             const token = localStorage.getItem('token');
-            const data = await axios.post('http://13.232.63.130:3000/group/add_participent', { group_id: group_id, user_ids: values, type: type, action: action }, {
+            const data = await axios.post('http://127.0.0.1:3000/group/add_participent', { group_id: group_id, user_ids: values, type: type, action: action }, {
                 headers: {
                     'authorization': token
                 }
@@ -558,12 +448,11 @@
         }
 
     }
-
     async function leftGroup(id) {
         try {
             const group_id = id;
             const token = localStorage.getItem('token');
-            const response = await axios.post('http://13.232.63.130:3000/group/left_group', { group_id: group_id }, {
+            const response = await axios.post('http://127.0.0.1:3000/group/left_group', { group_id: group_id }, {
                 headers: {
                     'authorization': token
                 }
@@ -581,9 +470,6 @@
             console.log(error);
         }
     }
-
-
-
 </script>
 
 </html>
