@@ -3,31 +3,80 @@ const Chat = require("../models/chatModel");
 const Group = require("../models/groupModel");
 const { Op } = require("sequelize");
 
+
+const jwt = require('jsonwebtoken');
+
 module.exports.respond = function(socket_io){
   
     //console.log("called_socket io controller");
 
-    socket_io.on("send_message", (obj) => {
-    console.log(obj);
-    socket_io.emit('recive_message',obj.content);//all user
-    
-    //socket_io.to(obj.group_id).emit("recive_message", obj.content);   //not working
-    
+    socket_io.on("send_message", async(obj) => {
+    //console.log(obj);
+
+    //verify token
+    const userObj = jwt.verify(obj.token, process.env.JSONTOKEN_SECRET);
+    //console.log(userObj.userId);
+    if(userObj){
+      const group_id = obj.group_id;
+      const content = obj.content;
+
+      const insertData = await Chat.create({
+        message: content,
+        groupId: parseInt(group_id),
+        userId:userObj.userId
+      });
+
+      console.log(insertData);
+      const chatId = insertData.id;
+      const message = insertData.message;
+      const groupid = insertData.groupId;
+      const userId = insertData.userId;
+
+      const chatData = await Chat.findOne(
+        {
+          where: { groupId: groupid,id:chatId},
+          order: [["createdAt", "DESC"]],
+          include:[
+            {
+              model:User,
+              attributes:['name'],
+            }
+          ]
+        },
+      );
+
+
+      const group = await Group.findOne({ where: { id: group_id } });
+      const groupName = group.name;
+      // // socket_io.join(groupName);
+      socket_io.broadcast.to(groupName).emit("recive_message",{chatData:chatData});
+    }
   });
 
-  
+  // function parseJwt(token) {
+  //   return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+  // }
+
+  // function findUserById(id){
+  //   try{
+  //     const user = User.findOne({where:{id:id}});
+  //     return user;
+  //   }catch(error){
+  //     console.log(error);
+  //   }
+  // }
 
   // socket.on("get_message", (obj) => {
   //   console.log(obj);
   // });
 
   socket_io.on("join_group", async(obj) => {
-    console.log(obj);
+    //console.log(obj);
     const group_id = obj.group_id;
 
     const group = await Group.findOne({ where: { id: group_id } });
     const groupName = group.name;
-    console.log("group details",groupName);
+    //console.log("group details",groupName);
     const chatData = await Chat.findAll(
             {
               where: { groupId: group_id},
@@ -41,16 +90,22 @@ module.exports.respond = function(socket_io){
               ]
             },
           );
-    console.log("chat data of group", JSON.stringify(chatData, null, 2));
+    //console.log("chat data of group", JSON.stringify(chatData, null, 2));
     socket_io.join(groupName);
     socket_io.emit('recive_message',{groupName:groupName,chatData:chatData});
   });
 
 
 
-  // socket_io.on('disconnect', () => {
-  //   console.log('A user disconnected');
-  // });
+  socket_io.on("disconnect_group", async(obj) => {
+    console.log(obj);
+    const group_id = obj.group_id;
+    const group = await Group.findOne({ where: { id: group_id } });
+    const groupName = group.name;
+    socket_io.leave(groupName);
+    socket_io.emit('status_message',{message:`Group disconnected ${groupName}`});
+    //console.log('A user disconnected');
+  });
 
   // socket_io.on('error', (err) => {
   //   console.log(`Error: ${err}`);

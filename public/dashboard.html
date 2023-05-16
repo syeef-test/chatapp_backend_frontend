@@ -12,6 +12,11 @@
         integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
         crossorigin="anonymous"></script>
 
+    
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+
         
         
     <style>
@@ -187,6 +192,24 @@
     });
 
     socket.on('recive_message',message=>{
+        console.log(message);
+        console.log(message.groupName);
+        console.log(message.chatData);
+
+        //when user join group
+        if(message.groupName  && message.chatData){
+            console.log('show chats of group onscreen');
+            deleteElementfromscreen();
+            showonscreen(message.chatData);
+        }
+
+        if(message.chatData){
+            console.log('show singale chat onscreen');
+            showonscreen(message.chatData);
+        }
+    });
+
+    socket.on('status_message',message=>{
         alert(message);
         console.log(message);
     });
@@ -197,18 +220,36 @@
         event.preventDefault();
         const content = event.target.message.value;
         const group_id = localStorage.getItem('group_id');
-        socket.emit('send_message',{content:content,group_id:group_id});
+        const token = localStorage.getItem('token');
+        socket.emit('send_message',{content:content,group_id:group_id,token:token});
     }
 
-    function getmessage(id){
-        const group_id = id;
-        socket.emit('get_message',{group_id:group_id});
-    }
+    // function getmessage(id){
+    //     const group_id = id;
+    //     socket.emit('get_message',{group_id:group_id});
+    // }
 
     function joingroup(id){
-        alert(id);
+        // alert(id);
         const group_id = id;
-        socket.emit('join_group',{group_id:id});
+        localStorage.setItem('group_id',group_id);
+        const token = localStorage.getItem('token');
+        socket.emit('join_group',{group_id:id,token:token});
+        const join_button = document.getElementById('groupjbtn'+id);
+        join_button.style.display = 'none';
+        const disconect_button = document.getElementById('groupdbtn'+id);
+        disconect_button.style.display = 'block';
+    }
+
+    function disconnectgroup(id){
+        alert(id);
+        const token = localStorage.getItem('token');
+        socket.emit('disconnect_group',{group_id:id,token:token});
+        const join_button = document.getElementById('groupjbtn'+id);
+        join_button.style.display = 'block';
+        const disconect_button = document.getElementById('groupdbtn'+id);
+        disconect_button.style.display = 'none';
+        deleteElementfromscreen();
     }
 
     async function load_data(query) {
@@ -265,38 +306,55 @@
         }
     })
  
-    // function showonscreen(chatData) {
-    //     try {
-    //         const parentElement = document.getElementById("message_list");
-    //         const obj = chatData;
-    //         //console.log(obj);
+    function showonscreen(chatData) {
+        try {
+            const parentElement = document.getElementById("message_list");
+            const obj = chatData;
+            //console.log(obj);
 
-    //         const liElement = document.createElement('ul');
-    //         liElement.className = "message_list_item";
-    //         liElement.id = "message_list_item";
+            const liElement = document.createElement('ul');
+            liElement.className = "message_list_item";
+            liElement.id = "message_list_item";
 
-    //         obj.map((element) => {
+            if(chatData.length>1){
+                obj.map((element) => {
 
-    //             let date = new Date(element.createdAt);
-    //             let fullyear = date.getFullYear();
-    //             let hour = date.getHours();
-    //             let minutes = date.getMinutes();
-    //             let seconds = date.getSeconds();
-    //             let createdAt = "Y" + ":" + fullyear + ":" + "H" + hour + ":" + "M" + minutes + ":" + "S" + seconds;
+                let date = new Date(element.createdAt);
+                let createdAt = moment(date).format('h:mm a');
 
-    //             var childElem = `<ul class="list-group-item message" id="${element.id}">${element.message}&nbsp&nbsp&nbsp&nbspFrom ${element.user.name}
-    //                 &nbsp&nbsp&nbsp&nbsp${createdAt}</ul>`;
-    //             liElement.innerHTML = liElement.innerHTML + childElem;
+                var childElem = `<ul class="list-group-item message" id="${element.id}">${element.message}&nbsp&nbsp&nbsp&nbspFrom ${element.user.name}
+                    &nbsp&nbsp&nbsp&nbsp${createdAt}</ul>`;
+                liElement.innerHTML = liElement.innerHTML + childElem;
 
-    //         });
+                });
+            }else{
+                const element = obj;
+                let date = new Date(element.createdAt);
+                let createdAt = moment(date).format('h:mm a');
+                var childElem = `<ul class="list-group-item message" id="${element.id}">${element.message}&nbsp&nbsp&nbsp&nbspFrom ${element.user.name}
+                    &nbsp&nbsp&nbsp&nbsp${createdAt}</ul>`;
+                liElement.innerHTML = liElement.innerHTML + childElem;
+            }
+            
 
-    //         parentElement.appendChild(liElement);
+            parentElement.appendChild(liElement);
 
 
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    function deleteElementfromscreen() {
+        let n1 = Array.from(document.getElementsByClassName('message_list_item'));
+        n1.forEach(n => {
+            n.remove();
+        });
+        let nodes = Array.from(document.getElementsByClassName('list-group-item message'));
+        nodes.forEach(node => {
+            node.remove();
+        });
+    }
     function logout(event) {
         try {
             localStorage.removeItem('token');
@@ -366,10 +424,12 @@
             //console.log(element);
             const parentElement = document.getElementById('group_list');
             let childElem = `<li class='btn btn-warning btn-sm' id='group${element.id}' value='${element.id}' onclick="getmessage(this.value)">${element.name}</li>`;
-            const left_button = `<ul><button class='btn btn-danger btn-sm' id='groupbtn${element.id}' value='${element.id}' onclick='leftGroup(this.value)'>Left Group</button></ul>`;
-            const join_button = `<ul><button class='btn btn-success btn-sm' id='groupbtn${element.id}' value='${element.id}' onclick='joingroup(this.value)'>Join Group</button></ul>`;
+            const left_button = `<ul><button class='btn btn-danger btn-sm' id='grouplbtn${element.id}' value='${element.id}' onclick='leftGroup(this.value)'>Left Group</button></ul>`;
+            const join_button = `<ul><button class='btn btn-success btn-sm' id='groupjbtn${element.id}' value='${element.id}' onclick='joingroup(this.value)'>Join Group</button></ul>`;
+            const disconnect_button = `<ul><button style="display: none;" class='btn btn-info btn-sm' id='groupdbtn${element.id}' value='${element.id}' onclick='disconnectgroup(this.value)'>Disconnect</button></ul>`;
             childElem += left_button;
             childElem += join_button;
+            childElem += disconnect_button;
             parentElement.innerHTML = parentElement.innerHTML + childElem;
         } catch (error) {
             console.log(error);

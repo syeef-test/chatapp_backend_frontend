@@ -31,12 +31,12 @@ var io = require("socket.io")(server, {
   },
 });
 
-io.on("connection", (socket) => {
-  console.log(socket.id);
-  socket.on("custom-event", (number, string, obj) => {
-    console.log(number, string, obj);
+// io.on("connection", (socket) => {
+//   console.log(socket.id);
+//   socket.on("custom-event", (number, string, obj) => {
+//     console.log(number, string, obj);
     
-  });
+//   });
 
 //   socket.on("send_message", (obj) => {
 //     console.log(obj);
@@ -68,11 +68,11 @@ io.on("connection", (socket) => {
 //   });
 
 
- });
+ //});
 
-// io.on('connection', (socket)=>{
-//   chatController.respond(socket);
-// });
+io.on('connection', (socket)=>{
+  chatController.respond(socket);
+});
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
