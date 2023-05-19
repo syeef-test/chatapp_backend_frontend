@@ -73,7 +73,7 @@
             </div>
         </div>
         <div class="container-sm">
-            <form class="d-flex" onsubmit="create_group(event)">
+            <form class="d-flex" onsubmit="create_group(event)" enctype="multipart/form-data">
                 <input class="form-control me-2" type="text" id="group_name" name="group_name"
                     placeholder="Enter Group Name" aria-label="text" />
                 <button class="btn btn-outline-success" type="submit">
@@ -104,6 +104,8 @@
                     <form class="d-flex" onsubmit="sendmessage(event)">
                         <input class="form-control me-2" type="text" id="message" name="message"
                             placeholder="Enter Text Here" aria-label="text" />
+                            <input class="form-control me-2" type="file" id="file" name="file"
+                            placeholder="Choose File " aria-label="text" />
                         <button class="btn btn-outline-success" type="submit">
                             Send
                         </button>
@@ -192,9 +194,9 @@
     });
 
     socket.on('recive_message',message=>{
-        console.log(message);
-        console.log(message.groupName);
-        console.log(message.chatData);
+        // console.log(message);
+        // console.log(message.groupName);
+        // console.log(message.chatData);
 
         //when user join group
         if(message.groupName  && message.chatData){
@@ -203,7 +205,7 @@
             showonscreen(message.chatData);
         }
 
-        if(message.chatData){
+        else if(message.chatData){
             console.log('show singale chat onscreen');
             showonscreen(message.chatData);
         }
@@ -221,6 +223,18 @@
         const content = event.target.message.value;
         const group_id = localStorage.getItem('group_id');
         const token = localStorage.getItem('token');
+        const fileInput = document.getElementById('file').files;
+        // if(group_id === '' || group_id === undefined){
+        //     alert("Select group for chat");
+        //     return;
+        // }
+        if(fileInput[0]){
+            const file_name = fileInput[0].name;
+            const file_size = fileInput[0].size;
+            const file_type = fileInput[0].type;
+            socket.emit('send_message',{content:content,group_id:group_id,token:token,fileInput:fileInput,file_name:file_name,file_size:file_size,file_type:file_type});
+        }
+
         socket.emit('send_message',{content:content,group_id:group_id,token:token});
     }
 
@@ -239,10 +253,11 @@
         join_button.style.display = 'none';
         const disconect_button = document.getElementById('groupdbtn'+id);
         disconect_button.style.display = 'block';
+        alert("Connection Succesful");
     }
 
     function disconnectgroup(id){
-        alert(id);
+        
         const token = localStorage.getItem('token');
         socket.emit('disconnect_group',{group_id:id,token:token});
         const join_button = document.getElementById('groupjbtn'+id);
@@ -250,6 +265,7 @@
         const disconect_button = document.getElementById('groupdbtn'+id);
         disconect_button.style.display = 'none';
         deleteElementfromscreen();
+        alert("Disconect Succesful");
     }
 
     async function load_data(query) {
@@ -310,29 +326,42 @@
         try {
             const parentElement = document.getElementById("message_list");
             const obj = chatData;
-            //console.log(obj);
+            console.log(obj);
 
             const liElement = document.createElement('ul');
             liElement.className = "message_list_item";
             liElement.id = "message_list_item";
 
-            if(chatData.length>1){
+            if(obj.length>1){
                 obj.map((element) => {
 
                 let date = new Date(element.createdAt);
                 let createdAt = moment(date).format('h:mm a');
 
                 var childElem = `<ul class="list-group-item message" id="${element.id}">${element.message}&nbsp&nbsp&nbsp&nbspFrom ${element.user.name}
-                    &nbsp&nbsp&nbsp&nbsp${createdAt}</ul>`;
+                    &nbsp&nbsp&nbsp&nbsp${createdAt}<span><img  src="${element.fileurl}" width="20%" height="20%"></span></ul>`;
+                if(element.fileurl !== ''){
+                    console.log(element);
+                    var imageElem = `<ul><img  src="${element.fileurl}" width="20%" height="20%"></ul>`;
+                    childElem.innerHTML = childElem.innerHTML + imageElem;
+                }
+                
+
                 liElement.innerHTML = liElement.innerHTML + childElem;
 
                 });
             }else{
+                console.log("sinagel element showig");
                 const element = obj;
                 let date = new Date(element.createdAt);
                 let createdAt = moment(date).format('h:mm a');
                 var childElem = `<ul class="list-group-item message" id="${element.id}">${element.message}&nbsp&nbsp&nbsp&nbspFrom ${element.user.name}
-                    &nbsp&nbsp&nbsp&nbsp${createdAt}</ul>`;
+                    &nbsp&nbsp&nbsp&nbsp${createdAt}<span><img  src="${element.fileurl}" width="20%" height="20%"></span></ul>`;
+                if(element.fileurl !== ''){
+                    console.log(element);
+                var imageElem = `<ul><img  src="${element.fileurl}" width="20%" height="20%"></ul>`;
+                childElem.innerHTML = childElem.innerHTML + imageElem;
+                }
                 liElement.innerHTML = liElement.innerHTML + childElem;
             }
             

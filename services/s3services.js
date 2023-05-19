@@ -1,5 +1,5 @@
 const AWS = require('aws-sdk');
-
+const fs = require("fs");
 
 const uploadToS3 = (data,filename)=> {
     const BUCKET_NAME = process.env.BUCKET_NAME;
@@ -13,7 +13,9 @@ const uploadToS3 = (data,filename)=> {
       region:REGION
     });
 
+
     
+    //ContentType:
         const params = {
           Bucket:BUCKET_NAME,
           Key:filename,
