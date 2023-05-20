@@ -51,14 +51,15 @@
                   <li>Mike</li>
                 </ul> -->
                 </div>
-              
+
                 <div class="chat-messages">
                     <div id="message_list" name="message_list" class="list-group"></div>
                 </div>
             </main>
             <div class="chat-form-container">
                 <form id="chat-form" onsubmit="sendmessage(event)">
-                    <input type="text" id="message" name="message" placeholder="Enter Text Here" aria-label="text" required/>
+                    <input type="text" id="message" name="message" placeholder="Enter Text Here" aria-label="text"
+                        required />
                     <input type="file" id="file" name="file" placeholder="Choose File " aria-label="text" />
                     <button class="btn btn-outline-success" type="submit">
                         <i class="fas fa-paper-plane"></i>Send
@@ -84,17 +85,18 @@
                     </form>
                 </div>
                 <div>
-                    <button onclick="show_participate_form()" class="btn btn-outline-success" id="add_participate_btn">ADD
+                    <button onclick="show_participate_form()" class="btn btn-outline-success"
+                        id="add_participate_btn">ADD
                         or Remove
                         Participate</button>
-    
+
                     <input style="display: none;" type="text" name="search_box" class="form-control form-control-lg"
                         placeholder="Type Here..." id="search_box" data-toggle="dropdown" aria-haspopup="true"
                         aria-expanded="false" onkeyup="javascript:load_data(this.value)" />
-    
+
                     <div id="participent" style="display: none;">
                         <form onsubmit="add_participent(event)">
-    
+
                             <div class="card">
                                 <div class="card-header">Search User For Group</div>
                                 <div class="card-body">
@@ -106,7 +108,7 @@
                                 <div class="card-body">
                                     <div class="mb-3">
                                         <select name="group" id="group" class="form-control" required>
-    
+
                                         </select>
                                     </div>
                                 </div>
@@ -121,29 +123,29 @@
                                 </div>
                                 <div class="mb-3">
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="radio_action" id="radio_action"
-                                            value="Add" checked />
+                                        <input class="form-check-input" type="radio" name="radio_action"
+                                            id="radio_action" value="Add" checked />
                                         <label class="form-check-label" for="radio_action">Add</label>
                                     </div>
-    
+
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="radio_action" id="radio_action"
-                                            value="Remove" />
+                                        <input class="form-check-input" type="radio" name="radio_action"
+                                            id="radio_action" value="Remove" />
                                         <label class="form-check-label" for="radio_action">Remove</label>
                                     </div>
-    
+
                                 </div>
                                 <div>
                                     <button type="submit" class="btn btn-outline-warning">Submit</button>
                                 </div>
                             </div>
-    
+
                         </form>
                     </div>
                 </div>
             </div>
         </div>
-    </section>   
+    </section>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"
@@ -155,8 +157,10 @@
 
     socket.on('connect', () => {
         console.log(`You are connected with id:${socket.id}`);
-        // socket.emit('custom-event', 10,"hello",{token:10});
+
+
     });
+
 
     socket.on('recive_message', message => {
         // console.log(message);
@@ -186,10 +190,10 @@
     function sendmessage(event) {
         event.preventDefault();
         const content = event.target.message.value;
-        if (!localStorage.getItem('group_id')) {
-            alert("Select group for chat");
-            return false;
-        }
+        event.target.message.value = '';
+        if (localStorage.getItem('group_id')) {
+            
+        
         const group_id = localStorage.getItem('group_id');
         const token = localStorage.getItem('token');
         const fileInput = document.getElementById('file').files;
@@ -201,6 +205,7 @@
         }
 
         socket.emit('send_message', { content: content, group_id: group_id, token: token });
+        }
     }
 
     // function getmessage(id){
@@ -247,7 +252,7 @@
                     },
 
                 });
-                
+
 
                 if (response.data) {
 
@@ -305,11 +310,24 @@
                     let date = new Date(element.createdAt);
                     let createdAt = moment(date).format('h:mm a');
 
-                    var childElem = `<ul class="list-group-item message" id="${element.id}"><div class="message"><p class="meta">${element.user.name}<span>${createdAt}</span></p>
+                    if(element.fileurl !== ''){
+                        var childElem = `<ul class="list-group-item message" id="${element.id}"><div class="message"><p class="meta">${element.user.name}<span>${createdAt}</span></p>
                         <p class="text">
                             ${element.message}
                         </p>
-                   <span><img  src="${element.fileurl}" width="20%" height="20%"></span></div></ul>`;
+                        <span><img  src="${element.fileurl}" width="20%" height="20%"></span></div></ul>`;
+                    }else{
+                        var childElem = `<ul class="list-group-item message" id="${element.id}"><div class="message"><p class="meta">${element.user.name}<span>${createdAt}</span></p>
+                        <p class="text">
+                            ${element.message}
+                        </p>
+                        </div></ul>`;
+                    }
+                    
+
+                   
+
+
                     liElement.innerHTML = liElement.innerHTML + childElem;
 
                 });
@@ -317,19 +335,29 @@
                 console.log("one element");
                 // console.log(typeof(obj));
                 const element = obj;
-                // console.log(element);
+                //console.log(element);
+                //console.log(Object.keys(element).length);
                 // console.log(element.user.name);
+                if (Object.keys(element).length > 0) {
+                    let date = new Date(element.createdAt);
+                    let createdAt = moment(date).format('h:mm a');
 
-                let date = new Date(element.createdAt);
-                let createdAt = moment(date).format('h:mm a');
-                
-                
-                var childElem = `<ul class="list-group-item message" id="${element.id}"><div class="message"><p class="meta">${element.user.name}<span>${createdAt}</span></p>
+                    if(element.fileurl !== ''){
+                    var childElem = `<ul class="list-group-item message" id="${element.id}"><div class="message"><p class="meta">${element.user.name}<span>${createdAt}</span></p>
                         <p class="text">
                             ${element.message}
                         </p>
                     <span><img  src="${element.fileurl}" width="20%" height="20%"></span></div></ul>`;
+                    }else{
+                        var childElem = `<ul class="list-group-item message" id="${element.id}"><div class="message"><p class="meta">${element.user.name}<span>${createdAt}</span></p>
+                        <p class="text">
+                            ${element.message}
+                        </p>
+                    </div></ul>`;
+                    }
                     liElement.innerHTML = liElement.innerHTML + childElem;
+                }
+
             }
 
 
@@ -365,22 +393,27 @@
         try {
             event.preventDefault();
             const group_name = event.target.group_name.value;
-            const token = localStorage.getItem('token');
-            const data = await axios.post('http://127.0.0.1:3000/group/create_group', { group_name: group_name }, {
-                headers: {
-                    'authorization': token
-                }
-            });
-            response = data.data;
-            if (response) {
-                alert(response.message);
-                show_group_onscreen(response.data);
-                const btn = document.getElementById('add_participate_btn');
-                btn.style.display = 'block';
+            event.target.group_name.value = '';
+            //console.log(group_name);
+            if (group_name !== null && group_name !== undefined && group_name !== '') {
+                const token = localStorage.getItem('token');
+                const data = await axios.post('http://127.0.0.1:3000/group/create_group', { group_name: group_name }, {
+                    headers: {
+                        'authorization': token
+                    }
+                });
+                response = data.data;
+                if (response) {
+                    alert(response.message);
+                    show_group_onscreen(response.data);
+                    const btn = document.getElementById('add_participate_btn');
+                    btn.style.display = 'block';
 
-            } else {
-                alert("please try again later");
+                } else {
+                    alert("please try again later");
+                }
             }
+
         } catch (error) {
             console.log(error);
         }
@@ -506,22 +539,32 @@
     }
     async function leftGroup(id) {
         try {
-            const group_id = id;
-            const token = localStorage.getItem('token');
-            const response = await axios.post('http://127.0.0.1:3000/group/left_group', { group_id: group_id }, {
-                headers: {
-                    'authorization': token
+            var result = confirm("Are you sure to delete?");
+
+            if (result) {
+                const group_id = id;
+                const token = localStorage.getItem('token');
+                const response = await axios.post('http://127.0.0.1:3000/group/left_group', { group_id: group_id }, {
+                    headers: {
+                        'authorization': token
+                    }
+                });
+
+                if (response) {
+                    //remove group button from screen
+                    const gr_li = document.getElementById(`group${group_id}`);
+                    const left_button = document.getElementById(`grouplbtn${group_id}`);
+                    const join_button = document.getElementById(`groupjbtn${group_id}`);
+                    const disconnect_button = document.getElementById(`groupdbtn${group_id}`);
+                    left_button.parentElement.removeChild(left_button);
+                    join_button.parentElement.removeChild(join_button);
+                    disconnect_button.parentElement.removeChild(disconnect_button);
+                    gr_li.parentElement.removeChild(gr_li);
+                    alert(response.data.message);
+
                 }
-            });
-
-            if (response) {
-                alert(response.data.message);
-                const gr_li = document.getElementById(`group${group_id}`);
-                const btn_li = document.getElementById(`groupbtn${group_id}`);
-                btn_li.parentElement.removeChild(btn_li);
-                gr_li.parentElement.removeChild(gr_li);
-
             }
+
         } catch (error) {
             console.log(error);
         }
