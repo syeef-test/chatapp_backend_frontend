@@ -203,9 +203,11 @@
             const file_size = fileInput[0].size;
             const file_type = fileInput[0].type;
             socket.emit('send_message', { content: content, group_id: group_id, token: token, fileInput: fileInput, file_name: file_name, file_size: file_size, file_type: file_type });
+        }else{
+            socket.emit('send_message', { content: content, group_id: group_id, token: token });
         }
 
-        socket.emit('send_message', { content: content, group_id: group_id, token: token });
+        
         }
     }
 
