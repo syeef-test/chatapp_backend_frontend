@@ -11,196 +11,232 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
         crossorigin="anonymous"></script>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
-        integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
-
-
-
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+    
+    
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
 
+        
+    <link rel="stylesheet" href="css/style.css">    
+    <style>
+        body {
+            padding-top: 50px;
+        }
 
-    <link rel="stylesheet" href="css/style.css">
+        .sidebar {
+            position: fixed;
+            top: 101px;
+            bottom: 0;
+            left: 0;
+            z-index: 1000;
+            display: block;
+            padding: 20px;
+            overflow-x: hidden;
+            overflow-y: auto;
+            /* Scrollable contents if viewport is shorter than content. */
+            background-color: #f5f5f5;
+            border-right: 1px solid #eee;
+            width: 180px;
+        }
 
+        @media (min-width: 768px) {
+            .main {
+                padding-right: 40px;
+                padding-left: 220px;
+                /* 180 + 40 */
+            }
+        }
+    </style>
 </head>
 
 <body>
 
     <section>
-        <div class="chat-container">
-            <header class="chat-header">
-                <h1><i class="fas fa-smile"></i> Chat App</h1>
-                <h3>Hello</h3>
-                <h3 id="username"></h3>
-                <a href="#" class="btn" onclick="logout(event)">Leave Chat App</a>
-            </header>
-            <main class="chat-main">
-                <div class="chat-sidebar">
-                    <h3><i class="fas fa-comments"></i>Groups:</h3>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <button class="btn btn-danger justify-content-md-end" onclick="logout(event)">Logout</button>
 
-                    <div class="sidebar" id="group_list">
-                    </div>
-
-                    <!-- <h2 id="room-name">JavaScript</h2>
-                <h3><i class="fas fa-users"></i> Users</h3>
-                <ul id="users">
-                  <li>Brad</li>
-                  <li>John</li>
-                  <li>Mary</li>
-                  <li>Paul</li>
-                  <li>Mike</li>
-                </ul> -->
-                </div>
-              
-                <div class="chat-messages">
-                    <div id="message_list" name="message_list" class="list-group"></div>
-                </div>
-            </main>
-            <div class="chat-form-container">
-                <form id="chat-form" onsubmit="sendmessage(event)">
-                    <input type="text" id="message" name="message" placeholder="Enter Text Here" aria-label="text" required/>
-                    <input type="file" id="file" name="file" placeholder="Choose File " aria-label="text" />
-                    <button class="btn btn-outline-success" type="submit">
-                        <i class="fas fa-paper-plane"></i>Send
-                    </button>
-                </form>
             </div>
-            <div class="chat-form-container">
-                <div id="sidebar">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="sidebar" id="group_list">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="container-sm">
-                    <form class="d-flex" onsubmit="create_group(event)" enctype="multipart/form-data">
-                        <input class="form-control me-2" type="text" id="group_name" name="group_name"
-                            placeholder="Enter Group Name" aria-label="text" />
-                        <button class="btn btn-outline-success" type="submit">
-                            Create Group
-                        </button>
-                    </form>
-                </div>
-                <div>
-                    <button onclick="show_participate_form()" class="btn btn-outline-success" id="add_participate_btn">ADD
-                        or Remove
-                        Participate</button>
-    
-                    <input style="display: none;" type="text" name="search_box" class="form-control form-control-lg"
-                        placeholder="Type Here..." id="search_box" data-toggle="dropdown" aria-haspopup="true"
-                        aria-expanded="false" onkeyup="javascript:load_data(this.value)" />
-    
-                    <div id="participent" style="display: none;">
-                        <form onsubmit="add_participent(event)">
-    
-                            <div class="card">
-                                <div class="card-header">Search User For Group</div>
-                                <div class="card-body">
-                                    <div class="mb-3">
-                                        <span id="search_result"></span>
-                                    </div>
-                                </div>
-                                <div class="card-header">Select Group</div>
-                                <div class="card-body">
-                                    <div class="mb-3">
-                                        <select name="group" id="group" class="form-control" required>
-    
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="card-header">Select User Type</div>
-                                <div class="card-body">
-                                    <div class="mb-3">
-                                        <select name="type" id="type" class="form-control">
-                                            <option value="true">Admin</option>
-                                            <option value="false" selected>Normal User</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="radio_action" id="radio_action"
-                                            value="Add" checked />
-                                        <label class="form-check-label" for="radio_action">Add</label>
-                                    </div>
-    
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="radio_action" id="radio_action"
-                                            value="Remove" />
-                                        <label class="form-check-label" for="radio_action">Remove</label>
-                                    </div>
-    
-                                </div>
-                                <div>
-                                    <button type="submit" class="btn btn-outline-warning">Submit</button>
-                                </div>
-                            </div>
-    
-                        </form>
+            </div>
+        </nav>
+    </section>
+
+
+    <section>
+        <div id="sidebar">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="sidebar" id="group_list">
                     </div>
                 </div>
             </div>
         </div>
-    </section>   
+        <div class="container-sm">
+            <form class="d-flex" onsubmit="create_group(event)" enctype="multipart/form-data">
+                <input class="form-control me-2" type="text" id="group_name" name="group_name"
+                    placeholder="Enter Group Name" aria-label="text" />
+                <button class="btn btn-outline-success" type="submit">
+                    Create Group
+                </button>
+            </form>
+        </div>
+    </section>
+
+
+
+    <div class="container" align="center">
+        <div class="row">
+            <h2>Chat App</h2>
+        </div>
+        <br>
+        <h3>Hello</h3>
+        <h3 id="username"></h3>
+
+        <section>
+            <div id="msgTable">
+
+            </div>
+        </section>
+        <section>
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                <div class="container-fluid">
+                    <form class="d-flex" onsubmit="sendmessage(event)">
+                        <input class="form-control me-2" type="text" id="message" name="message"
+                            placeholder="Enter Text Here" aria-label="text" />
+                            <input class="form-control me-2" type="file" id="file" name="file"
+                            placeholder="Choose File " aria-label="text" />
+                        <button class="btn btn-outline-success" type="submit">
+                            Send
+                        </button>
+                    </form>
+                </div>
+            </nav>
+        </section>
+        <section>
+
+        </section>
+        <section>
+            <div>
+                <button onclick="show_participate_form()" class="btn btn-outline-success" id="add_participate_btn">ADD
+                    or Remove
+                    Participate</button>
+
+                <input style="display: none;" type="text" name="search_box" class="form-control form-control-lg"
+                    placeholder="Type Here..." id="search_box" data-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false" onkeyup="javascript:load_data(this.value)" />
+
+                <div id="participent" style="display: none;">
+                    <form onsubmit="add_participent(event)">
+
+                        <div class="card">
+                            <div class="card-header">Search User For Group</div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <span id="search_result"></span>
+                                </div>
+                            </div>
+                            <div class="card-header">Select Group</div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <select name="group" id="group" class="form-control" required>
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="card-header">Select User Type</div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <select name="type" id="type" class="form-control">
+                                        <option value="true">Admin</option>
+                                        <option value="false" selected>Normal User</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="radio_action" id="radio_action"
+                                        value="Add" checked />
+                                    <label class="form-check-label" for="radio_action">Add</label>
+                                </div>
+
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="radio_action" id="radio_action"
+                                        value="Remove" />
+                                    <label class="form-check-label" for="radio_action">Remove</label>
+                                </div>
+
+                            </div>
+                            <div>
+                                <button type="submit" class="btn btn-outline-warning">Submit</button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </section>
+        <section>
+            <div align="right" id="message"></div>
+            <div id="message_list" name="message_list" class="list-group"></div>
+        </section>
+    </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<script src="https://cdn.socket.io/4.6.0/socket.io.min.js"
-    integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+"
-    crossorigin="anonymous"></script>
+<script src="https://cdn.socket.io/4.6.0/socket.io.min.js" integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+" crossorigin="anonymous"></script>
 <script>
     //socket part
     const socket = io("http://127.0.0.1:3000");
-
-    socket.on('connect', () => {
+    
+    socket.on('connect',()=>{
         console.log(`You are connected with id:${socket.id}`);
         // socket.emit('custom-event', 10,"hello",{token:10});
     });
 
-    socket.on('recive_message', message => {
+    socket.on('recive_message',message=>{
         // console.log(message);
         // console.log(message.groupName);
         // console.log(message.chatData);
 
         //when user join group
-        if (message.groupName && message.chatData) {
+        if(message.groupName  && message.chatData){
             console.log('show chats of group onscreen');
             deleteElementfromscreen();
             showonscreen(message.chatData);
         }
 
-        else if (message.chatData) {
+        else if(message.chatData){
             console.log('show singale chat onscreen');
             showonscreen(message.chatData);
         }
     });
 
-    socket.on('status_message', message => {
-        alert(message.message);
+    socket.on('status_message',message=>{
+        alert(message);
         console.log(message);
     });
 
-
+    
 
     function sendmessage(event) {
         event.preventDefault();
         const content = event.target.message.value;
-        if (!localStorage.getItem('group_id')) {
-            alert("Select group for chat");
-            return false;
-        }
         const group_id = localStorage.getItem('group_id');
         const token = localStorage.getItem('token');
         const fileInput = document.getElementById('file').files;
-        if (fileInput[0]) {
+        if(group_id === '' || group_id === undefined){
+            alert("Select group for chat");
+            return false;
+        }
+        if(fileInput[0]){
             const file_name = fileInput[0].name;
             const file_size = fileInput[0].size;
             const file_type = fileInput[0].type;
-            socket.emit('send_message', { content: content, group_id: group_id, token: token, fileInput: fileInput, file_name: file_name, file_size: file_size, file_type: file_type });
+            socket.emit('send_message',{content:content,group_id:group_id,token:token,fileInput:fileInput,file_name:file_name,file_size:file_size,file_type:file_type});
         }
 
-        socket.emit('send_message', { content: content, group_id: group_id, token: token });
+        socket.emit('send_message',{content:content,group_id:group_id,token:token});
     }
 
     // function getmessage(id){
@@ -208,30 +244,29 @@
     //     socket.emit('get_message',{group_id:group_id});
     // }
 
-    function joingroup(id) {
+    function joingroup(id){
         // alert(id);
         const group_id = id;
-        localStorage.setItem('group_id', group_id);
+        localStorage.setItem('group_id',group_id);
         const token = localStorage.getItem('token');
-
-        socket.emit('join_group', { group_id: id, token: token });
-        const join_button = document.getElementById('groupjbtn' + id);
+        socket.emit('join_group',{group_id:id,token:token});
+        const join_button = document.getElementById('groupjbtn'+id);
         join_button.style.display = 'none';
-        const disconect_button = document.getElementById('groupdbtn' + id);
+        const disconect_button = document.getElementById('groupdbtn'+id);
         disconect_button.style.display = 'block';
         alert("Connection Succesful");
     }
 
-    function disconnectgroup(id) {
-
+    function disconnectgroup(id){
+        
         const token = localStorage.getItem('token');
-        socket.emit('disconnect_group', { group_id: id, token: token });
-        const join_button = document.getElementById('groupjbtn' + id);
+        socket.emit('disconnect_group',{group_id:id,token:token});
+        const join_button = document.getElementById('groupjbtn'+id);
         join_button.style.display = 'block';
-        const disconect_button = document.getElementById('groupdbtn' + id);
+        const disconect_button = document.getElementById('groupdbtn'+id);
         disconect_button.style.display = 'none';
         deleteElementfromscreen();
-        //alert("Disconect Succesful");
+        alert("Disconect Succesful");
     }
 
     async function load_data(query) {
@@ -247,7 +282,7 @@
                     },
 
                 });
-                
+                // "Content-Type": "multipart/form-data",
 
                 if (response.data) {
 
@@ -287,51 +322,38 @@
             console.log(error);
         }
     })
-
+ 
     function showonscreen(chatData) {
         try {
             const parentElement = document.getElementById("message_list");
             const obj = chatData;
-            //console.log(obj);
+            console.log(obj);
 
             const liElement = document.createElement('ul');
             liElement.className = "message_list_item";
             liElement.id = "message_list_item";
 
-            if (obj.length > 1) {
-                console.log("multipale element");
-                // console.log(typeof(obj));
-                obj.forEach((element) => {
-                    let date = new Date(element.createdAt);
-                    let createdAt = moment(date).format('h:mm a');
-
-                    var childElem = `<ul class="list-group-item message" id="${element.id}"><div class="message"><p class="meta">${element.user.name}<span>${createdAt}</span></p>
-                        <p class="text">
-                            ${element.message}
-                        </p>
-                   <span><img  src="${element.fileurl}" width="20%" height="20%"></span></div></ul>`;
-                    liElement.innerHTML = liElement.innerHTML + childElem;
-
-                });
-            } else {
-                console.log("one element");
-                // console.log(typeof(obj));
-                const element = obj;
-                // console.log(element);
-                // console.log(element.user.name);
+            if(obj.length>1){
+                obj.map((element) => {
 
                 let date = new Date(element.createdAt);
                 let createdAt = moment(date).format('h:mm a');
-                
-                
-                var childElem = `<ul class="list-group-item message" id="${element.id}"><div class="message"><p class="meta">${element.user.name}<span>${createdAt}</span></p>
-                        <p class="text">
-                            ${element.message}
-                        </p>
-                    <span><img  src="${element.fileurl}" width="20%" height="20%"></span></div></ul>`;
-                    liElement.innerHTML = liElement.innerHTML + childElem;
-            }
 
+                var childElem = `<ul class="list-group-item message" id="${element.id}">${element.message}&nbsp&nbsp&nbsp&nbspFrom ${element.user.name}
+                    &nbsp&nbsp&nbsp&nbsp${createdAt}<span><img  src="${element.fileurl}" width="20%" height="20%"></span></ul>`;
+                liElement.innerHTML = liElement.innerHTML + childElem;
+
+                });
+            }else{
+                console.log("sinagel element showig");
+                const element = obj;
+                let date = new Date(element.createdAt);
+                let createdAt = moment(date).format('h:mm a');
+                var childElem = `<ul class="list-group-item message" id="${element.id}">${element.message}&nbsp&nbsp&nbsp&nbspFrom ${element.user.name}
+                    &nbsp&nbsp&nbsp&nbsp${createdAt}<span><img  src="${element.fileurl}" width="20%" height="20%"></span></ul>`;
+                liElement.innerHTML = liElement.innerHTML + childElem;
+            }
+            
 
             parentElement.appendChild(liElement);
 
@@ -419,7 +441,7 @@
         try {
             //console.log(element);
             const parentElement = document.getElementById('group_list');
-            let childElem = `<li class='btn btn-warning btn-sm' id='group${element.id}' value='${element.id}'>${element.name}</li>`;
+            let childElem = `<li class='btn btn-warning btn-sm' id='group${element.id}' value='${element.id}' onclick="getmessage(this.value)">${element.name}</li>`;
             const left_button = `<ul><button class='btn btn-danger btn-sm' id='grouplbtn${element.id}' value='${element.id}' onclick='leftGroup(this.value)'>Left Group</button></ul>`;
             const join_button = `<ul><button class='btn btn-success btn-sm' id='groupjbtn${element.id}' value='${element.id}' onclick='joingroup(this.value)'>Join Group</button></ul>`;
             const disconnect_button = `<ul><button style="display: none;" class='btn btn-info btn-sm' id='groupdbtn${element.id}' value='${element.id}' onclick='disconnectgroup(this.value)'>Disconnect</button></ul>`;

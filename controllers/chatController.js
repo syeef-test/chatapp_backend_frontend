@@ -50,15 +50,15 @@ module.exports.respond = function (socket_io) {
         {
           where: { groupId: groupid,id:chatId},
           order: [["createdAt", "DESC"]],
-          include:[
+          include: [
             {
-              model:User,
-              attributes:['name'],
-            }
-          ]
+              model: User,
+              attributes: ["name"],
+            },
+          ],
         },
       );
-      //console.log(chatData);
+      //console.log("singale chat", JSON.stringify(chatData, null, 2));
 
       const group = await Group.findOne({ where: { id: group_id } });
       const groupName = group.name;
@@ -69,31 +69,6 @@ module.exports.respond = function (socket_io) {
     }
   });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
   // function parseJwt(token) {
   //   return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
   // }
@@ -128,7 +103,7 @@ module.exports.respond = function (socket_io) {
         },
       ],
     });
-    //console.log("chat data of group", JSON.stringify(chatData, null, 2));
+    console.log("chat data of group", JSON.stringify(chatData, null, 2));
     socket_io.join(groupName);
     socket_io.emit("recive_message", {
       groupName: groupName,
@@ -142,6 +117,7 @@ module.exports.respond = function (socket_io) {
     const group = await Group.findOne({ where: { id: group_id } });
     const groupName = group.name;
     socket_io.leave(groupName);
+    
     socket_io.emit("status_message", {
       message: `Group disconnected ${groupName}`,
     });
