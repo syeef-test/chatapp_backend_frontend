@@ -157,8 +157,6 @@
 
     socket.on('connect', () => {
         console.log(`You are connected with id:${socket.id}`);
-
-
     });
 
 
@@ -197,7 +195,7 @@
         const group_id = localStorage.getItem('group_id');
         const token = localStorage.getItem('token');
         const fileInput = document.getElementById('file').files;
-        document.getElementById('file').defaultValue;
+        document.getElementById('file').value = '';
         if (fileInput[0]) {
             const file_name = fileInput[0].name;
             const file_size = fileInput[0].size;
