@@ -153,7 +153,7 @@
     crossorigin="anonymous"></script>
 <script>
     //socket part
-    const socket = io("http://13.232.63.130:3000");
+    const socket = io("http://127.0.0.1:3000");
 
     socket.on('connect', () => {
         console.log(`You are connected with id:${socket.id}`);
@@ -247,7 +247,7 @@
 
                 //alert(query);
                 const token = localStorage.getItem('token');
-                const response = await axios.post('http://13.232.63.130:3000/group/get_data', { query: query }, {
+                const response = await axios.post('http://127.0.0.1:3000/group/get_data', { query: query }, {
                     headers: {
                         'authorization': token,
                     },
@@ -398,7 +398,7 @@
             //console.log(group_name);
             if (group_name !== null && group_name !== undefined && group_name !== '') {
                 const token = localStorage.getItem('token');
-                const data = await axios.post('http://13.232.63.130:3000/group/create_group', { group_name: group_name }, {
+                const data = await axios.post('http://127.0.0.1:3000/group/create_group', { group_name: group_name }, {
                     headers: {
                         'authorization': token
                     }
@@ -423,7 +423,7 @@
         try {
             const token = localStorage.getItem('token');
 
-            const data = await axios.get('http://13.232.63.130:3000/group/get_group', {
+            const data = await axios.get('http://127.0.0.1:3000/group/get_group', {
                 headers: {
                     'authorization': token
                 }
@@ -486,7 +486,7 @@
         try {
             const token = localStorage.getItem('token');
 
-            data = await axios.get('http://13.232.63.130:3000/group/get_group_for_dropdown', {
+            data = await axios.get('http://127.0.0.1:3000/group/get_group_for_dropdown', {
                 headers: {
                     'authorization': token
                 }
@@ -520,7 +520,7 @@
             const action = event.target.radio_action.value
 
             const token = localStorage.getItem('token');
-            const data = await axios.post('http://13.232.63.130:3000/group/add_participent', { group_id: group_id, user_ids: values, type: type, action: action }, {
+            const data = await axios.post('http://127.0.0.1:3000/group/add_participent', { group_id: group_id, user_ids: values, type: type, action: action }, {
                 headers: {
                     'authorization': token
                 }
@@ -545,7 +545,7 @@
             if (result) {
                 const group_id = id;
                 const token = localStorage.getItem('token');
-                const response = await axios.post('http://13.232.63.130:3000/group/left_group', { group_id: group_id }, {
+                const response = await axios.post('http://127.0.0.1:3000/group/left_group', { group_id: group_id }, {
                     headers: {
                         'authorization': token
                     }

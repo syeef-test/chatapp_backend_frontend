@@ -1,10 +1,25 @@
 const User = require("../models/userModel");
 const Chat = require("../models/chatModel");
 const Group = require("../models/groupModel");
+const Archive = require("../models/archiveChatModel");
 const { Op } = require("sequelize");
 const S3Service = require("../services/s3services");
 
 const jwt = require("jsonwebtoken");
+
+var CronJob = require('cron').CronJob;
+const moment = require('moment');
+
+var job = new CronJob(
+  '0 0 * * *',
+  function() {
+      //console.log('You will see this message every second');
+      move_chat_to_archive();
+  },
+  null,
+  true,
+  'America/Los_Angeles'
+);
 
 module.exports.respond = function (socket_io) {
   //console.log("called_socket io controller");
@@ -131,6 +146,40 @@ module.exports.respond = function (socket_io) {
   //   console.log(`Error: ${err}`);
   // });
 };
+
+async function move_chat_to_archive(){
+  console.log("archive fun called");
+  const TODAY_START = moment().format('YYYY-MM-DD 00:00');
+  const NOW = moment().format('YYYY-MM-DD 23:59');
+
+  const chatData = await Chat.findAll({
+    where: {
+      createdAt: {
+          [Op.between]: [
+              TODAY_START,
+              NOW,
+          ]
+      }
+    }
+  });
+  //console.log("chat data", JSON.stringify(chatData, null, 2));
+  chatData.forEach(async(element) => {
+    //console.log(element);
+  
+
+    const response = await Archive.create({message:element.message,fileurl:element.fileurl,createdAt:element.createdAt,updatedAt:element.updatedAt,userId:element.userId,groupId:element.groupId,});
+    const response2 = await Chat.destroy({
+      where: {
+        id: element.id
+      }
+    });
+
+
+
+    //console.log(response);
+    //console.log(response2);
+  });
+}
 
 // function parseJwt(token) {
 //   return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());

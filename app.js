@@ -11,6 +11,7 @@ const User = require("./models/userModel");
 const Chat = require("./models/chatModel");
 const Group = require("./models/groupModel");
 const UserGroup = require("./models/user_groupModel");
+const Archive = require("./models/archiveChatModel");
 
 //route
 const userRoute = require("./routes/userRoute");
@@ -31,44 +32,7 @@ var io = require("socket.io")(server, {
   },
 });
 
-// io.on("connection", (socket) => {
-//   console.log(socket.id);
-//   socket.on("custom-event", (number, string, obj) => {
-//     console.log(number, string, obj);
-    
-//   });
 
-//   socket.on("send_message", (obj) => {
-//     console.log(obj);
-//     //io.emit('recive_message',obj.content);//all user
-//     if (obj.group_id === null) {
-//       socket.broadcast.emit("recive_message", obj.content);
-//     } else {
-//       socket.to(obj.group_id).emit("recive_message", obj.content);
-//     }
-//   });
-
-//   socket.on("get_message", (obj) => {
-//     console.log(obj);
-//   });
-
-//   socket.on("join-group", (group) => {
-//     console.log("group id of join", group);
-//     socket.join(group);
-//   });
-
-
-
-//   socket.on('disconnect', () => {
-//     console.log('A user disconnected');
-//   });
-
-//   socket.on('error', (err) => {
-//     console.log(`Error: ${err}`);
-//   });
-
-
- //});
 
 io.on('connection', (socket)=>{
   chatController.respond(socket);
@@ -88,6 +52,11 @@ app.use((req, res) => {
 
 User.hasMany(Chat);
 Chat.belongsTo(User);
+
+User.hasMany(Archive);
+Archive.belongsTo(User);
+Group.hasMany(Archive);
+Archive.belongsTo(Group);
 
 // The Super Many-to-Many relationship
 User.belongsToMany(Group, { through: UserGroup });
